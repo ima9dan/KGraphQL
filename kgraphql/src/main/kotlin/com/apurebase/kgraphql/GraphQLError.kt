@@ -33,7 +33,12 @@ open class GraphQLError(
     /**
      * The original error thrown from a field resolver during execution.
      */
-    val originalError: Throwable? = null
+    val originalError: Throwable? = null,
+
+    /**
+     * ima9dan Added extensions to error response json
+     */
+    val extensions: Map<String, Any?>? = null
 ) : Exception(message) {
 
     constructor(message: String, node: ASTNode?) : this(message, nodes = node?.let(::listOf))

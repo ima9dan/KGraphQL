@@ -90,6 +90,48 @@ class GraphQL(val schema: Schema) {
             return GraphQL(schema)
         }
 
+        /**
+         * ima9dan Added extensions to error response json
+         * TODO If you're having trouble writing this here, move it elsewhere
+         */
+        fun Collection<*>.toJsonElement(): JsonElement {
+            val list: MutableList<JsonElement> = mutableListOf()
+            this.forEach {
+                val value = it as? Any ?: return@forEach
+                when(value) {
+                    is Number -> list.add(JsonPrimitive(value))
+                    is Boolean -> list.add(JsonPrimitive(value))
+                    is String -> list.add(JsonPrimitive(value))
+                    is Map<*, *> -> list.add((value).toJsonElement())
+                    is Collection<*> -> list.add(value.toJsonElement())
+                    is Array<*> -> list.add(value.toList().toJsonElement())
+                    else -> list.add(JsonPrimitive(value.toString())) // other type
+                }
+            }
+            return JsonArray(list)
+        }
+        /**
+         * ima9dan Added extensions to error response json
+         * TODO If you're having trouble writing this here, move it elsewhere
+         */
+        fun Map<*, *>.toJsonElement(): JsonElement {
+            val map: MutableMap<String, JsonElement> = mutableMapOf()
+            this.forEach {
+                val key = it.key as? String ?: return@forEach
+                val value = it.value ?: return@forEach
+                when(value) {
+                    is Number? -> JsonPrimitive(value)
+                    is Boolean? -> JsonPrimitive(value)
+                    is String? -> JsonPrimitive(value)
+                    is Map<*, *> -> map[key] = (value).toJsonElement()
+                    is Collection<*> -> map[key] = value.toJsonElement()
+                    is Array<*> -> map[key] = value.toList().toJsonElement()
+                    else -> map[key] = JsonPrimitive(value.toString())  // other type
+                }
+            }
+            return JsonObject(map)
+        }
+
         private fun GraphQLError.serialize(): String = buildJsonObject {
             put("errors", buildJsonArray {
                 addJsonObject {
@@ -105,6 +147,24 @@ class GraphQL(val schema: Schema) {
                     put("path", buildJsonArray {
                         // TODO: Build this path. https://spec.graphql.org/June2018/#example-90475
                     })
+                    /**
+                     * ima9dan Added extensions to error response json
+                     */
+                    extensions?.let {
+                        put("extensions", buildJsonObject {
+                            it.forEach { (key, value) ->
+                                when(value) {
+                                    is Number? -> put(key, value)
+                                    is String? -> put(key, value)
+                                    is Boolean? -> put(key, value)
+                                    is Map<*,*> -> put(key, value.toJsonElement())
+                                    is Collection<*> -> put(key, value.toJsonElement())
+                                    is Array<*> -> put(key, value.toList().toJsonElement())
+                                    else -> put(key, JsonPrimitive(value.toString()))  // other type
+                                }
+                            }
+                        })
+                    }
                 }
             })
         }.toString()
