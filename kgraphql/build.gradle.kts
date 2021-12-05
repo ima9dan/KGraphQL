@@ -1,6 +1,7 @@
 
 plugins {
     base
+    id("com.github.johnrengelman.shadow") version "7.1.0"
     kotlin("jvm") version "1.5.10"
     id("org.jetbrains.dokka") version "1.4.32"
     signing

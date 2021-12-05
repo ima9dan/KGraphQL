@@ -38,7 +38,8 @@ open class GraphQLError(
     /**
      * ima9dan Added extensions to error response json
      */
-    val extensions: Map<String, Any?>? = null
+    val extensionsErrorCode: String? = "INTERNAL",
+    val extensionsErrorDetail: Map<String, Any?>? = null
 ) : Exception(message) {
 
     constructor(message: String, node: ASTNode?) : this(message, nodes = node?.let(::listOf))
@@ -57,6 +58,33 @@ open class GraphQLError(
         } else nodes?.mapNotNull { node ->
             node.loc?.let { getLocation(it.source, it.start) }
         }
+    }
+
+    val extensions: Map<String,Any?>?by lazy {
+        val extensions = mutableMapOf<String,Any?>()
+        extensionsErrorCode?.let{  extensions.put("code",extensionsErrorCode) }
+        extensionsErrorDetail?.let { extensions.put("detail",extensionsErrorDetail) }
+        extensions
+    }
+
+    /**
+     * use only debug
+     */
+    fun debugInfo(): Map<String,Any?> {
+        val exception = mutableMapOf<String,Any?>()
+        val stackList = this.stackTrace
+        if (!stackList[0].fileName.isNullOrEmpty()) {
+            exception.put("fileName",stackList[0].fileName)
+            exception.put("line",stackList[0].lineNumber.toString())
+        }
+        if (!stackList[0].methodName.isNullOrEmpty()) {
+            exception.put("method",stackList[0].methodName)
+        }
+        if (!stackList[0].className.isNullOrEmpty()) {
+            exception.put("classPath", stackList[0].className)
+        }
+        exception.put("stackTrace", stackList)
+        return  exception
     }
 
     fun prettyPrint(): String {

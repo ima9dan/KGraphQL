@@ -23,6 +23,7 @@ fun Application.module() {
     install(GraphQL) {
         useDefaultPrettyPrinter = true
         playground = true
+        debug = true
         endpoint = "/"
 
         wrap {

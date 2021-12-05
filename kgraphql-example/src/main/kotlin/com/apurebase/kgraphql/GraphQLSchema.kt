@@ -23,16 +23,17 @@ fun SchemaBuilder.ufoSchema() {
     /**
      * ima9dan Added extensions to error response json
      */
-    query ("testError") {
+    query("testError") {
         description = "Returns a subset of the UFO Sighting records"
         resolver { ->
-            try {
-                throw Exception("dfada")
-            } catch (e:Exception) {
-                val stackList: Array<StackTraceElement> = e.stackTrace
-                throw GraphQLError("fasdfas",null,null,null,null,
-                    mapOf("aa" to null,"bb" to 1, "cc" to stackList, "gaga" to arrayListOf<Any>("22","ss",32,"333"), "ggg" to mapOf<String,Any>("aa" to "adad","bb" to arrayOf<Any>("22","ss",32,"333"), "gaga" to listOf<Any>("22","ss",32,"333"))))
-            }
+//            try {
+            throw GraphQLError("dfada")
+//            } catch (e:Exception) {
+//                val stackList: Array<StackTraceElement> = e.stackTrace
+//                throw GraphQLError("fasdfas",null,null,null,null,
+//                    mapOf("aa" to null,"bb" to 1, "cc" to stackList, "gaga" to arrayListOf<Any>("22","ss",32,"333"), "ggg" to mapOf<String,Any>("aa" to "adad","bb" to arrayOf<Any>("22","ss",32,"333"), "gaga" to listOf<Any>("22","ss",32,"333"))))
+//            }
+            User(4, "dd")
         }
     }
 
@@ -117,3 +118,4 @@ fun SchemaBuilder.ufoSchema() {
         }
     }
 }
+

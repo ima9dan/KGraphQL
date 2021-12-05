@@ -1,5 +1,6 @@
 package com.apurebase.kgraphql
 
+import com.apurebase.kgraphql.GraphQL.Feature.toJsonElement
 import com.apurebase.kgraphql.schema.Schema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import com.apurebase.kgraphql.schema.dsl.SchemaConfigurationDSL
@@ -26,6 +27,8 @@ class GraphQL(val schema: Schema) {
         var playground: Boolean = false
 
         var endpoint: String = "/graphql"
+
+        var debug: Boolean = true
 
         fun context(block: ContextBuilder.(ApplicationCall) -> Unit) {
             contextSetup = block
@@ -83,7 +86,7 @@ class GraphQL(val schema: Schema) {
                     }
                 } catch (e: Throwable) {
                     if (e is GraphQLError) {
-                        context.respond(HttpStatusCode.OK, e.serialize())
+                        context.respond(HttpStatusCode.OK, e.serialize(config))
                     } else throw e
                 }
             }
@@ -131,15 +134,34 @@ class GraphQL(val schema: Schema) {
             }
             return JsonObject(map)
         }
+        /**
+         * ima9dan Added extensions to error response json
+         * TODO If you're having trouble writing this here, move it elsewhere
+         */
+        fun buldJsonObjectByMap(it:Map<String,Any?>):JsonObject {
+            return buildJsonObject {
+                it.forEach { (key, value) ->
+                    when(value) {
+                        is Number? -> put(key, value)
+                        is String? -> put(key, value)
+                        is Boolean? -> put(key, value)
+                        is Map<*,*> -> put(key, value.toJsonElement())
+                        is Collection<*> -> put(key, value.toJsonElement())
+                        is Array<*> -> put(key, value.toList().toJsonElement())
+                        else -> put(key, JsonPrimitive(value.toString()))  // other type
+                    }
+                }
+            }
+        }
 
-        private fun GraphQLError.serialize(): String = buildJsonObject {
+        private fun GraphQLError.serialize(configure: Configuration): String = buildJsonObject {
             put("errors", buildJsonArray {
                 addJsonObject {
                     put("message", message)
                     put("locations", buildJsonArray {
                         locations?.forEach {
                             addJsonObject {
-                                put("line", it.line)
+                                put("liane", it.line)
                                 put("column", it.column)
                             }
                         }
@@ -151,19 +173,12 @@ class GraphQL(val schema: Schema) {
                      * ima9dan Added extensions to error response json
                      */
                     extensions?.let {
-                        put("extensions", buildJsonObject {
-                            it.forEach { (key, value) ->
-                                when(value) {
-                                    is Number? -> put(key, value)
-                                    is String? -> put(key, value)
-                                    is Boolean? -> put(key, value)
-                                    is Map<*,*> -> put(key, value.toJsonElement())
-                                    is Collection<*> -> put(key, value.toJsonElement())
-                                    is Array<*> -> put(key, value.toList().toJsonElement())
-                                    else -> put(key, JsonPrimitive(value.toString()))  // other type
-                                }
-                            }
-                        })
+                        put("extensions", buldJsonObjectByMap(it))
+                    }
+                    if (configure.debug) {
+                        debugInfo().let {
+                            put("debug", buldJsonObjectByMap(it))
+                        }
                     }
                 }
             })
