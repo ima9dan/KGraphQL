@@ -1,6 +1,5 @@
 package com.apurebase.kgraphql
 
-import com.apurebase.kgraphql.GraphQL.Feature.toJsonElement
 import com.apurebase.kgraphql.schema.Schema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import com.apurebase.kgraphql.schema.dsl.SchemaConfigurationDSL
@@ -11,7 +10,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.*
 import kotlinx.serialization.json.Json.Default.decodeFromString
 
 class GraphQL(val schema: Schema) {
@@ -28,7 +26,11 @@ class GraphQL(val schema: Schema) {
 
         var endpoint: String = "/graphql"
 
-        var debug: Boolean = true
+        /**
+         * ima9dan
+         * 3. Added debug mode. If true, exception information will be output in extensions when an error occurs.
+         */
+        var debug: Boolean = false
 
         fun context(block: ContextBuilder.(ApplicationCall) -> Unit) {
             contextSetup = block
@@ -86,103 +88,21 @@ class GraphQL(val schema: Schema) {
                     }
                 } catch (e: Throwable) {
                     if (e is GraphQLError) {
-                        context.respond(HttpStatusCode.OK, e.serialize(config))
+                        /**
+                         * ima9dan
+                         * 3. Added debug mode. If true, exception information will be output in extensions when an error occurs.
+                         * 4. Embed serialize function to GraphQLError because we want to use GraphQLError individually. ex: at StatusPages Plugin.
+                         */
+                        context.respond(HttpStatusCode.OK, e.serialize(config.debug))
                     } else throw e
                 }
             }
             return GraphQL(schema)
         }
-
-        /**
-         * ima9dan Added extensions to error response json
-         * TODO If you're having trouble writing this here, move it elsewhere
-         */
-        fun Collection<*>.toJsonElement(): JsonElement {
-            val list: MutableList<JsonElement> = mutableListOf()
-            this.forEach {
-                val value = it as? Any ?: return@forEach
-                when(value) {
-                    is Number -> list.add(JsonPrimitive(value))
-                    is Boolean -> list.add(JsonPrimitive(value))
-                    is String -> list.add(JsonPrimitive(value))
-                    is Map<*, *> -> list.add((value).toJsonElement())
-                    is Collection<*> -> list.add(value.toJsonElement())
-                    is Array<*> -> list.add(value.toList().toJsonElement())
-                    else -> list.add(JsonPrimitive(value.toString())) // other type
-                }
-            }
-            return JsonArray(list)
-        }
-        /**
-         * ima9dan Added extensions to error response json
-         * TODO If you're having trouble writing this here, move it elsewhere
-         */
-        fun Map<*, *>.toJsonElement(): JsonElement {
-            val map: MutableMap<String, JsonElement> = mutableMapOf()
-            this.forEach {
-                val key = it.key as? String ?: return@forEach
-                val value = it.value ?: return@forEach
-                when(value) {
-                    is Number? -> JsonPrimitive(value)
-                    is Boolean? -> JsonPrimitive(value)
-                    is String? -> JsonPrimitive(value)
-                    is Map<*, *> -> map[key] = (value).toJsonElement()
-                    is Collection<*> -> map[key] = value.toJsonElement()
-                    is Array<*> -> map[key] = value.toList().toJsonElement()
-                    else -> map[key] = JsonPrimitive(value.toString())  // other type
-                }
-            }
-            return JsonObject(map)
-        }
-        /**
-         * ima9dan Added extensions to error response json
-         * TODO If you're having trouble writing this here, move it elsewhere
-         */
-        fun buldJsonObjectByMap(it:Map<String,Any?>):JsonObject {
-            return buildJsonObject {
-                it.forEach { (key, value) ->
-                    when(value) {
-                        is Number? -> put(key, value)
-                        is String? -> put(key, value)
-                        is Boolean? -> put(key, value)
-                        is Map<*,*> -> put(key, value.toJsonElement())
-                        is Collection<*> -> put(key, value.toJsonElement())
-                        is Array<*> -> put(key, value.toList().toJsonElement())
-                        else -> put(key, JsonPrimitive(value.toString()))  // other type
-                    }
-                }
-            }
-        }
-
-        private fun GraphQLError.serialize(configure: Configuration): String = buildJsonObject {
-            put("errors", buildJsonArray {
-                addJsonObject {
-                    put("message", message)
-                    put("locations", buildJsonArray {
-                        locations?.forEach {
-                            addJsonObject {
-                                put("liane", it.line)
-                                put("column", it.column)
-                            }
-                        }
-                    })
-                    put("path", buildJsonArray {
-                        // TODO: Build this path. https://spec.graphql.org/June2018/#example-90475
-                    })
-                    /**
-                     * ima9dan Added extensions to error response json
-                     */
-                    extensions?.let {
-                        put("extensions", buldJsonObjectByMap(it))
-                    }
-                    if (configure.debug) {
-                        debugInfo().let {
-                            put("debug", buldJsonObjectByMap(it))
-                        }
-                    }
-                }
-            })
-        }.toString()
     }
+    /**
+     * ima9dan : Delete serialize function because..
+     * 4. Embed serialize function to GraphQLError because we want to use GraphQLError individually. ex: at StatusPages Plugin.
+     */
 
 }

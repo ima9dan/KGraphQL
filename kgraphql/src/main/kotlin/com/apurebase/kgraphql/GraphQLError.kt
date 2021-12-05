@@ -3,6 +3,7 @@ package com.apurebase.kgraphql
 import com.apurebase.kgraphql.schema.model.ast.ASTNode
 import com.apurebase.kgraphql.schema.model.ast.Location.Companion.getLocation
 import com.apurebase.kgraphql.schema.model.ast.Source
+import kotlinx.serialization.json.*
 
 open class GraphQLError(
 
@@ -36,13 +37,16 @@ open class GraphQLError(
     val originalError: Throwable? = null,
 
     /**
-     * ima9dan Added extensions to error response json
-     */
-    val extensionsErrorCode: String? = "INTERNAL",
+     * ima9dan
+     * 1. Added extensions To the error response.extensions type is Map<String, Any?>?
+     * 2. Added "error type" to  make it easy to branch by error types at the client side.
+    */
+    val extensionsErrorType: String? = "INTERNAL",
     val extensionsErrorDetail: Map<String, Any?>? = null
 ) : Exception(message) {
 
     constructor(message: String, node: ASTNode?) : this(message, nodes = node?.let(::listOf))
+    constructor(message: String, extensionsErrorType: String?,extensionsErrorDetail:Map<String, Any?>?) : this(message,null,null,null,null,extensionsErrorType,extensionsErrorDetail )
 
     /**
      * An array of { line, column } locations within the source GraphQL document
@@ -58,33 +62,6 @@ open class GraphQLError(
         } else nodes?.mapNotNull { node ->
             node.loc?.let { getLocation(it.source, it.start) }
         }
-    }
-
-    val extensions: Map<String,Any?>?by lazy {
-        val extensions = mutableMapOf<String,Any?>()
-        extensionsErrorCode?.let{  extensions.put("code",extensionsErrorCode) }
-        extensionsErrorDetail?.let { extensions.put("detail",extensionsErrorDetail) }
-        extensions
-    }
-
-    /**
-     * use only debug
-     */
-    fun debugInfo(): Map<String,Any?> {
-        val exception = mutableMapOf<String,Any?>()
-        val stackList = this.stackTrace
-        if (!stackList[0].fileName.isNullOrEmpty()) {
-            exception.put("fileName",stackList[0].fileName)
-            exception.put("line",stackList[0].lineNumber.toString())
-        }
-        if (!stackList[0].methodName.isNullOrEmpty()) {
-            exception.put("method",stackList[0].methodName)
-        }
-        if (!stackList[0].className.isNullOrEmpty()) {
-            exception.put("classPath", stackList[0].className)
-        }
-        exception.put("stackTrace", stackList)
-        return  exception
     }
 
     fun prettyPrint(): String {
@@ -104,4 +81,122 @@ open class GraphQLError(
 
         return output
     }
+
+    /**
+     * ima9dan
+     * 1. Added extensions To the error response.extensions type is Map<String, Any?>?
+     * 2. Added "error type" to  make it easy to branch by error types at the client side.
+     * 3. Added debug mode. If true, exception information will be output in extensions when an error occurs.
+     * 4. Embed serialize function to GraphQLError because we want to use GraphQLError individually. ex: at StatusPages Plugin.
+     */
+    open val extensions: Map<String,Any?>?by lazy {
+        val extensions = mutableMapOf<String,Any?>()
+        extensionsErrorType?.let{  extensions.put("type",extensionsErrorType) }
+        extensionsErrorDetail?.let { extensions.put("detail",extensionsErrorDetail) }
+        extensions
+    }
+
+    open fun extensionsDebug(): Map<String,Any?> {
+        val extensions = mutableMapOf<String,Any?>()
+        extensionsErrorType?.let{  extensions.put("type",extensionsErrorType) }
+        extensionsErrorDetail?.let { extensions.put("detail",extensionsErrorDetail) }
+        extensions.put("debug",this.debugInfo())
+        return extensions
+    }
+
+    open fun debugInfo(): Map<String,Any?> {
+        val exception = mutableMapOf<String,Any?>()
+        val stackList = this.stackTrace
+        if (!stackList[0].fileName.isNullOrEmpty()) {
+            exception.put("fileName",stackList[0].fileName)
+            exception.put("line",stackList[0].lineNumber.toString())
+        }
+        if (!stackList[0].methodName.isNullOrEmpty()) {
+            exception.put("method",stackList[0].methodName)
+        }
+        if (!stackList[0].className.isNullOrEmpty()) {
+            exception.put("classPath", stackList[0].className)
+        }
+        exception.put("stackTrace", stackList)
+        return  exception
+    }
+
+    protected fun Collection<*>.toJsonElement(): JsonElement {
+        val list: MutableList<JsonElement> = mutableListOf()
+        this.forEach {
+            val value = it as? Any ?: return@forEach
+            when(value) {
+                is Number -> list.add(JsonPrimitive(value))
+                is Boolean -> list.add(JsonPrimitive(value))
+                is String -> list.add(JsonPrimitive(value))
+                is Map<*, *> -> list.add((value).toJsonElement())
+                is Collection<*> -> list.add(value.toJsonElement())
+                is Array<*> -> list.add(value.toList().toJsonElement())
+                else -> list.add(JsonPrimitive(value.toString())) // other type
+            }
+        }
+        return JsonArray(list)
+    }
+
+    protected fun Map<*, *>.toJsonElement(): JsonElement {
+        val map: MutableMap<String, JsonElement> = mutableMapOf()
+        this.forEach {
+            val key = it.key as? String ?: return@forEach
+            val value = it.value ?: return@forEach
+            when(value) {
+                is Number? -> map[key] = JsonPrimitive(value)
+                is Boolean? -> map[key] = JsonPrimitive(value)
+                is String? -> map[key] = JsonPrimitive(value)
+                is Map<*, *> -> map[key] = (value).toJsonElement()
+                is Collection<*> -> map[key] = value.toJsonElement()
+                is Array<*> -> map[key] = value.toList().toJsonElement()
+                else -> map[key] = JsonPrimitive(value.toString())  // other type
+            }
+        }
+        return JsonObject(map)
+    }
+
+    protected fun buldJsonObjectByMap(it:Map<String,Any?>): JsonObject {
+        return buildJsonObject {
+            it.forEach { (key, value) ->
+                when(value) {
+                    is Number? -> put(key, value)
+                    is String? -> put(key, value)
+                    is Boolean? -> put(key, value)
+                    is Map<*,*> -> put(key, value.toJsonElement())
+                    is Collection<*> -> put(key, value.toJsonElement())
+                    is Array<*> -> put(key, value.toList().toJsonElement())
+                    else -> put(key, JsonPrimitive(value.toString()))  // other type
+                }
+            }
+        }
+    }
+
+    open fun serialize(debug:Boolean=false): String = buildJsonObject {
+        put("errors", buildJsonArray {
+            addJsonObject {
+                put("message", message)
+                put("locations", buildJsonArray {
+                    locations?.forEach {
+                        addJsonObject {
+                            put("liane", it.line)
+                            put("column", it.column)
+                        }
+                    }
+                })
+                put("path", buildJsonArray {
+                    // TODO: Build this path. https://spec.graphql.org/June2018/#example-90475
+                })
+                if (!debug) {
+                    extensions?.let {
+                        put("extensions", buldJsonObjectByMap(it))
+                    }
+                } else {
+                    extensionsDebug().let {
+                        put("extensions", buldJsonObjectByMap(it))
+                    }
+                }
+            }
+        })
+    }.toString()
 }

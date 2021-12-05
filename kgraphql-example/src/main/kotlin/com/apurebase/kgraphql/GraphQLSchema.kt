@@ -27,7 +27,9 @@ fun SchemaBuilder.ufoSchema() {
         description = "Returns a subset of the UFO Sighting records"
         resolver { ->
 //            try {
-            throw GraphQLError("dfada")
+            val ex = GraphQLError("dasdfasd","UNAUTHORIZE", mapOf<String,Any?>("test" to arrayOf<Any>("22",23)))
+            val ee = ex.serialize(true)
+//            throw GraphQLError("dfada")
 //            } catch (e:Exception) {
 //                val stackList: Array<StackTraceElement> = e.stackTrace
 //                throw GraphQLError("fasdfas",null,null,null,null,
