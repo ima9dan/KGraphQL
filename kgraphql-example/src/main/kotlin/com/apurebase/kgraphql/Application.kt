@@ -23,13 +23,12 @@ fun Application.module() {
     install(GraphQL) {
         useDefaultPrettyPrinter = true
         playground = true
-        debug = true
+        debug = true   // added option
         endpoint = "/"
 
         wrap {
             authenticate(optional = true, build = it)
         }
-
         context { call ->
             call.authentication.principal<User>()?.let {
                 +it

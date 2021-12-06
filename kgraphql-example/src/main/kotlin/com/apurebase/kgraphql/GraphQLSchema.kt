@@ -26,15 +26,21 @@ fun SchemaBuilder.ufoSchema() {
     query("testError") {
         description = "Returns a subset of the UFO Sighting records"
         resolver { ->
-//            try {
-            val ex = GraphQLError("dasdfasd","UNAUTHORIZE", mapOf<String,Any?>("test" to arrayOf<Any>("22",23)))
-            val ee = ex.serialize(true)
-//            throw GraphQLError("dfada")
-//            } catch (e:Exception) {
-//                val stackList: Array<StackTraceElement> = e.stackTrace
-//                throw GraphQLError("fasdfas",null,null,null,null,
-//                    mapOf("aa" to null,"bb" to 1, "cc" to stackList, "gaga" to arrayListOf<Any>("22","ss",32,"333"), "ggg" to mapOf<String,Any>("aa" to "adad","bb" to arrayOf<Any>("22","ss",32,"333"), "gaga" to listOf<Any>("22","ss",32,"333"))))
-//            }
+            val ex = GraphQLError("validation error!","VALIDATION_ERROR",
+                mapOf<String,Any?>("singleCheck" to
+                        mapOf<String,String>("email" to "not an email",
+                        "age" to "Limited to 150",
+                        ), "multiCheck" to "The 'from' number must not exceed the 'to' number"))
+            throw ex
+            User(4, "dd")
+        }
+    }
+
+    query("testError2") {
+        description = "Returns a subset of the UFO Sighting records"
+        resolver { ->
+            val ex = GraphQLError("Access Token has expired","AUTHORIZATION_ERROR")
+            throw ex
             User(4, "dd")
         }
     }
