@@ -20,31 +20,6 @@ fun SchemaBuilder.ufoSchema() {
         deserialize = { dateString -> LocalDate.parse(dateString) }
     }
 
-    /**
-     * ima9dan Added extensions to error response json
-     */
-    query("testError") {
-        description = "Returns a subset of the UFO Sighting records"
-        resolver { ->
-            val ex = GraphQLError("validation error!","VALIDATION_ERROR",
-                mapOf<String,Any?>("singleCheck" to
-                        mapOf<String,String>("email" to "not an email",
-                        "age" to "Limited to 150",
-                        ), "multiCheck" to "The 'from' number must not exceed the 'to' number"))
-            throw ex
-            User(4, "dd")
-        }
-    }
-
-    query("testError2") {
-        description = "Returns a subset of the UFO Sighting records"
-        resolver { ->
-            val ex = GraphQLError("Access Token has expired","AUTHORIZATION_ERROR")
-            throw ex
-            User(4, "dd")
-        }
-    }
-
     query("sightings") {
         description = "Returns a subset of the UFO Sighting records"
 
@@ -126,4 +101,3 @@ fun SchemaBuilder.ufoSchema() {
         }
     }
 }
-

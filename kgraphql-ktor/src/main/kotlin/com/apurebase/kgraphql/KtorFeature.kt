@@ -27,8 +27,7 @@ class GraphQL(val schema: Schema) {
         var endpoint: String = "/graphql"
 
         /**
-         * ima9dan
-         * 3. Added debug mode. If true, exception information will be output in extensions when an error occurs.
+         * Change 2: Added debug option to GraphQL Configuration (flag to output exception information to extensions)
          */
         var debug: Boolean = false
 
@@ -88,11 +87,6 @@ class GraphQL(val schema: Schema) {
                     }
                 } catch (e: Throwable) {
                     if (e is GraphQLError) {
-                        /**
-                         * ima9dan
-                         * 3. Added debug mode. If true, exception information will be output in extensions when an error occurs.
-                         * 4. Embed serialize function to GraphQLError because we want to use GraphQLError individually. ex: at StatusPages Plugin.
-                         */
                         context.respond(HttpStatusCode.OK, e.serialize(config.debug))
                     } else throw e
                 }
@@ -100,9 +94,5 @@ class GraphQL(val schema: Schema) {
             return GraphQL(schema)
         }
     }
-    /**
-     * ima9dan : Delete serialize function because..
-     * 4. Embed serialize function to GraphQLError because we want to use GraphQLError individually. ex: at StatusPages Plugin.
-     */
 
 }

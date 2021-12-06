@@ -38,10 +38,8 @@ open class GraphQLError(
     val originalError: Throwable? = null,
 
     /**
-     * ima9dan
-     * 1. Added extensions To the error response.extensions type is Map<String, Any?>?
-     * 2. Added "error type" to  make it easy to branch by error types at the client side.
-    */
+     * Change 1: Added extensions to the error response.
+     */
     val extensionsErrorType: String? = "INTERNAL_SERVER_ERROR",
     val extensionsErrorDetail: Map<String, Any?>? = null
 ) : Exception(message) {
@@ -86,11 +84,9 @@ open class GraphQLError(
     }
 
     /**
-     * ima9dan
-     * 1. Added extensions To the error response.extensions type is Map<String, Any?>?
-     * 2. Added "error type" to  make it easy to branch by error types at the client side.
-     * 3. Added debug mode. If true, exception information will be output in extensions when an error occurs.
-     * 4. Embed serialize function to GraphQLError because we want to use GraphQLError individually. ex: at StatusPages Plugin.
+     * Change 1: Added extensions to the error response.
+     * Change 2: Added debug option to GraphQL Configuration (flag to output exception information to extensions)
+     * Change 3: Moved serialize (), which was defined as an extension of GraphQLError, into GraphQLError. option
      */
     open val extensions: Map<String,Any?>?by lazy {
         val extensions = mutableMapOf<String,Any?>()
@@ -123,23 +119,6 @@ open class GraphQLError(
         exception.put("stackTrace", stackList)
         return  exception
     }
-
-//    protected fun buldJsonObjectByMap(it:Map<String,Any?>): JsonObject {
-//        return buildJsonObject {
-//            it.forEach { (key, value) ->
-//                when(value) {
-//                    is Number? -> put(key, value)
-//                    is String? -> put(key, value)
-//                    is Boolean? -> put(key, value)
-//                    is Map<*,*> -> put(key, value.toJsonElement())
-//                    is Collection<*> -> put(key, value.toJsonElement())
-//                    is Array<*> -> put(key, value.toList().toJsonElement())
-//                    else -> put(key, JsonPrimitive(value.toString()))  // other type
-//                }
-//            }
-//        }
-//    }
-
 
     open fun serialize(debug:Boolean=false): String = buildJsonObject {
         put("errors", buildJsonArray {
