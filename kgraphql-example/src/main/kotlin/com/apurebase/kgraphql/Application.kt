@@ -32,6 +32,7 @@ fun Application.module() {
         wrap {
             authenticate(optional = true, build = it)
         }
+
         context { call ->
             call.authentication.principal<User>()?.let {
                 +it
