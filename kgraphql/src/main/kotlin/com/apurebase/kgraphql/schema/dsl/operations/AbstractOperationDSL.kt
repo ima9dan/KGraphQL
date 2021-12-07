@@ -58,6 +58,26 @@ abstract class AbstractOperationDSL(
 
     fun <T, R, E, W, Q, A, S, B, U, C> resolver(function: suspend (R, E, W, Q, A, S, B, U, C) -> T) = resolver(FunctionWrapper.on(function))
 
+    fun <T, R, E, W, Q, A, S, B, U, C, D> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M) -> T) = resolver(FunctionWrapper.on(function))
+
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N) -> T) = resolver(FunctionWrapper.on(function))
+
     fun accessRule(rule: (Context) -> Exception?){
         val accessRuleAdapter: (Nothing?, Context) -> Exception? = { _, ctx -> rule(ctx) }
         this.accessRuleBlock = accessRuleAdapter

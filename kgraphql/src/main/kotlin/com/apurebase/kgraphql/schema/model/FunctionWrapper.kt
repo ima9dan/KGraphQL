@@ -62,6 +62,35 @@ interface FunctionWrapper <T> : Publisher {
         fun <T, R, E, W, Q, A, S, G, H, J> on (function : suspend (R, E, W, Q, A, S, G, H, J) -> T, hasReceiver: Boolean = false)
             = ArityNine(function, hasReceiver)
 
+        fun <T, R, E, W, Q, A, S, G, H, J, K> on (function : suspend (R, E, W, Q, A, S, G, H, J, K) -> T, hasReceiver: Boolean = false)
+                = ArityTen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L) -> T, hasReceiver: Boolean = false)
+                = ArityEleven(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M) -> T, hasReceiver: Boolean = false)
+                = ArityTwelve(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N) -> T, hasReceiver: Boolean = false)
+                = ArityThirteen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N, O> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N, O) -> T, hasReceiver: Boolean = false)
+                = ArityFourteen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P) -> T, hasReceiver: Boolean = false)
+                = ArityFifteen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U) -> T, hasReceiver: Boolean = false)
+                = AritySixteen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U, V> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U, V) -> T, hasReceiver: Boolean = false)
+                = AritySeventeen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U, V, X> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U, V, X) -> T, hasReceiver: Boolean = false)
+                = ArityEighteen(function, hasReceiver)
+
+        fun <T, R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U, V, X, Y> on (function : suspend (R, E, W, Q, A, S, G, H, J, K, L, M, N, O, P, U, V, X, Y) -> T, hasReceiver: Boolean = false)
+                = ArityNineteen(function, hasReceiver)
     }
 
     val kFunction: KFunction<T>
@@ -488,6 +517,366 @@ interface FunctionWrapper <T> : Publisher {
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
                 val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityTen<T, R, E, W, Q, A, S, D, F, G, H>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityEleven<T, R, E, W, Q, A, S, D, F, G, H, I>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityTwelve<T, R, E, W, Q, A, S, D, F, G, H, I, J>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityThirteen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityFourteen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K, L>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K, L)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K, args[13] as L)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityFifteen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K, args[13] as L, args[14] as M)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class AritySixteen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K, args[13] as L, args[14] as M, args[15] as N)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class AritySeventeen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N, O>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N, O)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K, args[13] as L, args[14] as M, args[15] as N, args[16] as O)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityEighteen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N, O, P>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N, O, P)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K, args[13] as L, args[14] as M, args[15] as N, args[16] as O, args[17] as P)
+                subscribers.forEach{
+                    it.value?.onNext(t)
+                }
+                return t
+            } else {
+                val e = IllegalArgumentException("This function needs exactly ${arity()} arguments")
+                subscribers.forEach{
+                    it.value?.onError(e)
+                }
+                throw e
+            }
+        }
+    }
+
+    class ArityNineteen<T, R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N, O, P, U>(
+        val implementation : suspend (R, E, W, Q, A, S, D, F, G, H, I, J, K, L, M, N, O, P, U)-> T, override val hasReceiver: Boolean
+    ) : Base<T>() {
+        override fun unsubscribe(subscription: String) {
+            subscribers.remove(subscription)
+        }
+        override suspend fun invoke(args: List<Any?>, subscriptionArgs: List<String>, objectWriter: ObjectWriter): T? {
+            TODO("not needed")
+        }
+        override fun subscribe(subscription: String, subscriber: Subscriber) {
+            subscribers[subscription] = subscriber
+        }
+
+        override val kFunction: KFunction<T>
+            @Synchronized
+            get() = implementation.reflect()!!
+
+        override fun arity(): Int = 9
+
+        override suspend fun invoke(vararg args: Any?): T? {
+            if(args.size == arity()){
+                val t = implementation(args[0] as R, args[1] as E, args[2] as W, args[3] as Q, args[4] as A, args[5] as S, args[6] as D, args[7] as F, args[8] as G, args[9] as H, args[10] as I, args[11] as J, args[12] as K, args[13] as L, args[14] as M, args[15] as N, args[16] as O, args[17] as P, args[18] as U)
                 subscribers.forEach{
                     it.value?.onNext(t)
                 }
