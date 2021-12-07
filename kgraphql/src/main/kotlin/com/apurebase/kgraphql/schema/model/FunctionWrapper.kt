@@ -30,37 +30,37 @@ interface FunctionWrapper <T> : Publisher {
                 = ArityN(function)
 
         fun <T> on (function : suspend () -> T) : FunctionWrapper<T>
-            = ArityZero(function)
+                = ArityZero(function)
 
         fun <T, R> on (function : suspend (R) -> T)
-            = ArityOne(function, false)
+                = ArityOne(function, false)
 
         fun <T, R> on (function : suspend (R) -> T, hasReceiver: Boolean = false)
-            = ArityOne(function, hasReceiver)
+                = ArityOne(function, hasReceiver)
 
         fun <T, R, E> on (function : suspend (R, E) -> T, hasReceiver: Boolean = false)
-            = ArityTwo(function, hasReceiver)
+                = ArityTwo(function, hasReceiver)
 
         fun <T, R, E, W> on (function : suspend (R, E, W) -> T, hasReceiver: Boolean = false)
-            = ArityThree(function, hasReceiver)
+                = ArityThree(function, hasReceiver)
 
         fun <T, R, E, W, Q> on (function : suspend (R, E, W, Q) -> T, hasReceiver: Boolean = false)
-            = ArityFour(function, hasReceiver)
+                = ArityFour(function, hasReceiver)
 
         fun <T, R, E, W, Q, A> on (function : suspend (R, E, W, Q, A) -> T, hasReceiver: Boolean = false)
-            = ArityFive(function, hasReceiver)
+                = ArityFive(function, hasReceiver)
 
         fun <T, R, E, W, Q, A, S> on (function : suspend (R, E, W, Q, A, S) -> T, hasReceiver: Boolean = false)
-            = AritySix(function, hasReceiver)
+                = AritySix(function, hasReceiver)
 
         fun <T, R, E, W, Q, A, S, G> on (function : suspend (R, E, W, Q, A, S, G) -> T, hasReceiver: Boolean = false)
-            = AritySeven(function, hasReceiver)
+                = AritySeven(function, hasReceiver)
 
         fun <T, R, E, W, Q, A, S, G, H> on (function : suspend (R, E, W, Q, A, S, G, H) -> T, hasReceiver: Boolean = false)
-            = ArityEight(function, hasReceiver)
+                = ArityEight(function, hasReceiver)
 
         fun <T, R, E, W, Q, A, S, G, H, J> on (function : suspend (R, E, W, Q, A, S, G, H, J) -> T, hasReceiver: Boolean = false)
-            = ArityNine(function, hasReceiver)
+                = ArityNine(function, hasReceiver)
 
         fun <T, R, E, W, Q, A, S, G, H, J, K> on (function : suspend (R, E, W, Q, A, S, G, H, J, K) -> T, hasReceiver: Boolean = false)
                 = ArityTen(function, hasReceiver)
@@ -548,7 +548,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 10
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -584,7 +584,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 11
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -620,7 +620,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 12
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -656,7 +656,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 13
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -692,7 +692,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 14
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -728,7 +728,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 15
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -764,7 +764,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 16
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -800,7 +800,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 17
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -836,7 +836,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 18
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
@@ -872,7 +872,7 @@ interface FunctionWrapper <T> : Publisher {
             @Synchronized
             get() = implementation.reflect()!!
 
-        override fun arity(): Int = 9
+        override fun arity(): Int = 19
 
         override suspend fun invoke(vararg args: Any?): T? {
             if(args.size == arity()){
