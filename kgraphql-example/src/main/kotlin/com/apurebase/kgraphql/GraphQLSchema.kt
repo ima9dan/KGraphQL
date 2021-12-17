@@ -68,7 +68,9 @@ fun SchemaBuilder.ufoSchema() {
     query("topSightings") {
         description = "Returns a list of the top state,country based on the number of sightings"
 
-        resolver { -> service.getTopSightings() }
+        resolver { keyword:String ->
+            val ss = keyword
+            service.getTopSightings() }
     }
 
     query("topCountrySightings") {
