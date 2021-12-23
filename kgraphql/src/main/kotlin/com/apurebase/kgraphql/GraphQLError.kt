@@ -40,13 +40,14 @@ open class GraphQLError(
     /**
      * Change 1: Added extensions to the error response.
      */
-    val extensionsErrorType: String? = "INTERNAL_SERVER_ERROR",
-    val extensionsErrorDetail: Map<String, Any?>? = null
+    val status: Int? = 500,
+    val code: String? = "INTERNAL_SERVER_ERROR",
+    val detail: Map<String, Any?>? = null
 ) : Exception(message) {
 
     constructor(message: String, node: ASTNode?) : this(message, nodes = node?.let(::listOf))
-    constructor(message: String, extensionsErrorType: String?,extensionsErrorDetail:Map<String, Any?>?) : this(message,null,null,null,null,extensionsErrorType,extensionsErrorDetail )
-    constructor(message: String, extensionsErrorType: String?) : this(message,null,null,null,null,extensionsErrorType )
+    constructor(status: Int = 500,code: String?, message: String,  detail:Map<String, Any?>?) : this(message,null,null,null,null,status,code,detail )
+    constructor(status: Int = 500,code: String?, message: String) : this(message,null,null,null,null,status,code )
 
 
     /**
@@ -90,15 +91,17 @@ open class GraphQLError(
      */
     open val extensions: Map<String,Any?>?by lazy {
         val extensions = mutableMapOf<String,Any?>()
-        extensionsErrorType?.let{  extensions.put("type",extensionsErrorType) }
-        extensionsErrorDetail?.let { extensions.put("detail",extensionsErrorDetail) }
+        status?.let{  extensions.put("status", status) }
+        code?.let{  extensions.put("code", code) }
+        detail?.let { extensions.put("detail",detail) }
         extensions
     }
 
     open fun extensionsDebug(): Map<String,Any?> {
         val extensions = mutableMapOf<String,Any?>()
-        extensionsErrorType?.let{  extensions.put("type",extensionsErrorType) }
-        extensionsErrorDetail?.let { extensions.put("detail",extensionsErrorDetail) }
+        status?.let{  extensions.put("status", status) }
+        code?.let{  extensions.put("code", code) }
+        detail?.let { extensions.put("detail",detail) }
         extensions.put("debug",this.debugInfo())
         return extensions
     }
