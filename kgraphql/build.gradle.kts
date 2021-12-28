@@ -1,4 +1,5 @@
 
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     base
     id("com.github.johnrengelman.shadow") version "7.1.0"
@@ -77,6 +78,7 @@ val dokkaJar by tasks.creating(Jar::class) {
     from(tasks.dokkaHtml)
 }
 
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -123,4 +125,19 @@ signing {
         System.getenv("ORG_GRADLE_PROJECT_signingPassword")
     )
     sign(publishing.publications["maven"])
+}
+
+tasks {
+    named<ShadowJar>("shadowJar") {
+        archiveBaseName.set("kgraphql")
+        mergeServiceFiles()
+//        manifest {
+//            attributes(mapOf("Main-Class" to "com.example.MainKt"))
+//        }
+        // @see https://youtrack.jetbrains.com/issue/KT-25709
+        exclude("**/*.kotlin_metadata")
+        exclude("**/*.kotlin_builtins")
+
+        archiveClassifier.set("") // remove suffix `-all` as intellij can't find the library otherwise
+    }
 }
