@@ -128,6 +128,15 @@ tasks {
         // @see https://youtrack.jetbrains.com/issue/KT-25709
         exclude("**/*.kotlin_metadata")
         exclude("**/*.kotlin_builtins")
+        dependencies {
+            exclude(dependency("org.jetbrains.kotlin:.*"))
+            exclude(dependency("org.jetbrains.kotlinx:.*"))
+            exclude(dependency("io.ktor:.*"))
+
+        }
+//        dependencies {
+//            exclude("kotlinx/**")
+//        }
 
         archiveClassifier.set("") // remove suffix `-all` as intellij can't find the library otherwise
     }

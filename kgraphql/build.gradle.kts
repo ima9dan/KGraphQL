@@ -137,6 +137,7 @@ tasks {
         // @see https://youtrack.jetbrains.com/issue/KT-25709
         exclude("**/*.kotlin_metadata")
         exclude("**/*.kotlin_builtins")
+        exclude("kotlinx/**/*.*")
 
         archiveClassifier.set("") // remove suffix `-all` as intellij can't find the library otherwise
     }
