@@ -7,6 +7,7 @@ import com.apurebase.kgraphql.schema.model.PropertyDef
 import nidomiro.kdataloader.BatchLoader
 import nidomiro.kdataloader.TimedAutoDispatcherDataLoaderOptions
 import nidomiro.kdataloader.factories.TimedAutoDispatcherDataLoaderFactory
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 class DataLoaderPropertyDSL<T, K, R>(
@@ -18,6 +19,7 @@ class DataLoaderPropertyDSL<T, K, R>(
     internal var dataLoader: BatchLoader<K, R>? = null
     internal var prepareWrapper: FunctionWrapper<K>? = null
 
+    var  args: List<Any> = listOf()
     private val inputValues = mutableListOf<InputValueDef<*>>()
 
     fun loader(block: BatchLoader<K, R>) {
@@ -74,6 +76,7 @@ class DataLoaderPropertyDSL<T, K, R>(
 
         return PropertyDef.DataLoadedFunction(
             name = name,
+            args = args,
             description = description,
             accessRule = accessRuleBlock,
             deprecationReason = deprecationReason,
