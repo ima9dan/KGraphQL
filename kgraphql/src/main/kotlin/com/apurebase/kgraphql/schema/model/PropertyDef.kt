@@ -33,13 +33,15 @@ interface PropertyDef<T> : Depreciable, DescribedDef {
         val loader: DataLoaderFactory<K, R>,
         val prepare: FunctionWrapper<K>,
         val returnType: KType,
-        var args: List<Any>,
+        var args: Any?,
         override val description: String? = null,
         override val isDeprecated: Boolean = false,
         override val deprecationReason: String? = null,
         override val accessRule: ((T?, Context) -> Exception?)? = null,
         val inputValues: List<InputValueDef<*>> = emptyList()
-    ): PropertyDef<T>
+    ): PropertyDef<T> {
+
+    }
 
     open class Kotlin<T : Any, R> (
             val kProperty: KProperty1<T, R>,

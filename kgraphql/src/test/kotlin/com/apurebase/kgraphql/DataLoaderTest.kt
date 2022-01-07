@@ -82,6 +82,9 @@ class DataLoaderTest {
                 dataProperty<Int, Person?>("respondsTo") {
                     prepare { it.id }
                     loader { keys ->
+                        this.args = 11
+                        this.args = 12
+
                         println("== Running [respondsTo] loader with keys: $keys ==")
                         keys.map { ExecutionResult.Success(boss[it]) }
                     }

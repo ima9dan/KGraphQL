@@ -19,7 +19,16 @@ class DataLoaderPropertyDSL<T, K, R>(
     internal var dataLoader: BatchLoader<K, R>? = null
     internal var prepareWrapper: FunctionWrapper<K>? = null
 
-    var  args: List<Any> = listOf()
+    var args: Any? = null
+        get() {
+            return field
+        }
+        set(value:Any?) {
+            if (field == null) { //一度でも値がはいったら以降は受け付けない(効率化のため)
+                field = value
+            }
+        }
+
     private val inputValues = mutableListOf<InputValueDef<*>>()
 
     fun loader(block: BatchLoader<K, R>) {
