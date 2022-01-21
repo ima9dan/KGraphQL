@@ -93,6 +93,21 @@ abstract class AbstractOperationDSL(
     @JvmName("resolver3")
     fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5) -> T) = resolver(FunctionWrapper.on(function))
 
+    @JvmName("resolver4")
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6) -> T) = resolver(FunctionWrapper.on(function))
+
+    @JvmName("resolver5")
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7) -> T) = resolver(FunctionWrapper.on(function))
+
+    @JvmName("resolver6")
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7, R8> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7, R8) -> T) = resolver(FunctionWrapper.on(function))
+
+    @JvmName("resolver7")
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7, R8, R9> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7, R8, R9) -> T) = resolver(FunctionWrapper.on(function))
+
+    @JvmName("resolver8")
+    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, E0> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, E0) -> T) = resolver(FunctionWrapper.on(function))
+
 
 //    fun <T, R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, G1, G2, R2, R3> resolver(function: suspend (R, E, W, Q, A, S, B, U, C, D, F, G, H, I, J, K, L, M, N, G1, G2, R2, R3) -> T) = resolver(FunctionWrapper.on(function))
 
