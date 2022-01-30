@@ -59,6 +59,8 @@ class DataLoaderTest {
         val treeChild: AtomicProperty = AtomicProperty()
     )
 
+    data class User(val id:String, val name: String)
+
     fun schema(
         block: SchemaBuilder.() -> Unit = {}
     ): Pair<DefaultSchema, AtomicCounters> {
@@ -81,14 +83,15 @@ class DataLoaderTest {
 
                 dataProperty<Int, Person?>("respondsTo") {
                     prepare { it.id }
-                    loader { keys ->
+                    loader { keys,ctx ->
+                        val user = ctx.get<User>()
                         println("== Running [respondsTo] loader with keys: $keys ==")
                         keys.map { ExecutionResult.Success(boss[it]) }
                     }
                 }
                 dataProperty<Int, List<Person>>("colleagues") {
                     prepare { it.id }
-                    loader { keys ->
+                    loader { keys,ctx ->
                         delay(10)
                         println("== Running [colleagues] loader with keys: $keys ==")
                         keys.map { ExecutionResult.Success(colleagues[it] ?: listOf()) }
@@ -114,7 +117,7 @@ class DataLoaderTest {
             type<ABC> {
 
                 dataProperty<String, Int>("B") {
-                    loader { keys ->
+                    loader { keys,ctx ->
                         println("== Running [B] loader with keys: $keys ==")
                         counters.abcB.loader.incrementAndGet()
                         keys.map {
@@ -139,7 +142,7 @@ class DataLoaderTest {
 
                 dataProperty<Int?, Person?>("person") {
                     prepare { it.personId }
-                    loader { personIds ->
+                    loader { personIds,ctx ->
                         personIds.map {
                             delay(1)
                             ExecutionResult.Success(
@@ -157,7 +160,7 @@ class DataLoaderTest {
 
                 dataProperty<String, List<ABC>>("children") {
 //                    setReturnType { listOf() }
-                    loader { keys ->
+                    loader { keys,ctx ->
                         println("== Running [children] loader with keys: $keys ==")
                         counters.abcChildren.loader.incrementAndGet()
                         keys.map {
@@ -195,7 +198,7 @@ class DataLoaderTest {
 
             type<Tree> {
                 dataProperty<Int, Tree>("child") {
-                    loader { keys ->
+                    loader { keys,ctx ->
                         println("== Running [child] loader with keys: $keys ==")
                         counters.treeChild.loader.incrementAndGet()
                         keys.map { num -> ExecutionResult.Success(Tree(10 + num, "Fisk - $num")) }
@@ -297,6 +300,10 @@ class DataLoaderTest {
 
     @RepeatedTest(repeatTimes, name = "Nested array loaders")
     fun `Nested array loaders`() {
+        val user = User(id = "1", name = "Username")
+        val ctx = context {
+            +user
+        }
         assertTimeoutPreemptively(timeout) {
             val (schema) = schema()
             val query = """
@@ -313,7 +320,7 @@ class DataLoaderTest {
                 }                
             """.trimIndent()
 
-            schema.executeBlocking(query).also(::println).deserialize()
+            schema.executeBlocking(query, context = ctx).also(::println).deserialize()
         }
     }
 

@@ -1,5 +1,6 @@
 package nidomiro.kdataloader.dsl
 
+import com.apurebase.kgraphql.Context
 import nidomiro.kdataloader.BatchLoader
 import nidomiro.kdataloader.DataLoader
 import nidomiro.kdataloader.ExecutionResult
@@ -44,28 +45,32 @@ class DataLoaderDSL<K, R>(
 
     }
 
-    internal fun toDataLoaderFactory(): DataLoaderFactory<K, R> {
-        return SimpleDataLoaderFactory(
-            { DataLoaderOptionsDSL<K, R>().apply(optionsBlock).toDataLoaderOptions() },
-            cachePrimes,
-            batchLoader
-        )
-    }
+    /** cant use : dataloaderctx **/
+//    internal fun toDataLoaderFactory(): DataLoaderFactory<K, R> {
+//        return SimpleDataLoaderFactory(
+//            { DataLoaderOptionsDSL<K, R>().apply(optionsBlock).toDataLoaderOptions() },
+//            cachePrimes,
+//            batchLoader
+//        )
+//    }
 }
 
+/** cant use : dataloaderctx **/
+//suspend fun <K, R> dataLoader(
+//    batchLoader: BatchLoader<K, R>,
+//    ctx:Context = Context(emptyMap()),
+//    block: (DataLoaderDSL<K, R>.() -> Unit)? = null
+//): DataLoader<K, R> {
+//    return dataLoaderFactory(batchLoader, block).constructNew(Context(emptyMap()))
+//}
+//
 
-suspend fun <K, R> dataLoader(
-    batchLoader: BatchLoader<K, R>,
-    block: (DataLoaderDSL<K, R>.() -> Unit)? = null
-): DataLoader<K, R> {
-    return dataLoaderFactory(batchLoader, block).constructNew()
-}
-
-fun <K, R> dataLoaderFactory(
-    batchLoader: BatchLoader<K, R>,
-    block: (DataLoaderDSL<K, R>.() -> Unit)? = null
-): DataLoaderFactory<K, R> {
-    val dataLoaderDSL = DataLoaderDSL(batchLoader)
-    block?.let { dataLoaderDSL.apply(it) }
-    return dataLoaderDSL.toDataLoaderFactory()
-}
+/** cant use : dataloaderctx **/
+//fun <K, R> dataLoaderFactory(
+//    batchLoader: BatchLoader<K, R>,
+//    block: (DataLoaderDSL<K, R>.() -> Unit)? = null
+//): DataLoaderFactory<K, R> {
+//    val dataLoaderDSL = DataLoaderDSL(batchLoader)
+//    block?.let { dataLoaderDSL.apply(it) }
+//    return dataLoaderDSL.toDataLoaderFactory()
+//}

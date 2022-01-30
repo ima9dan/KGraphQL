@@ -24,7 +24,7 @@ class DataLoaderPropertyDSLTest {
                     prepare { _, a: String, b: Int, c: String, d: Int, e: String, f: Int, g: String, h: Int ->
                         "$a $b $c $d $e $f $g $h"
                     }
-                    loader { keys ->
+                    loader { keys,ctx ->
                         keys.map { ExecutionResult.Success(Parent(it)) }
                     }
                 }

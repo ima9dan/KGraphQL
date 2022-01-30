@@ -34,7 +34,7 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
         val loaders: Map<Field.DataLoader<*, *, *>, DataLoader<Any?, *>>
     )
 
-    private suspend fun ExecutionPlan.constructLoaders(): Map<Field.DataLoader<*, *, *>, DataLoader<Any?, *>> {
+    private suspend fun ExecutionPlan.constructLoaders(ctx:Context): Map<Field.DataLoader<*, *, *>, DataLoader<Any?, *>> {
         val loaders = mutableMapOf<Field.DataLoader<*, *, *>, DataLoader<Any?, *>>()
 
         suspend fun Collection<Execution>.look() {
@@ -45,7 +45,7 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
                     is Execution.Node -> {
                         ex.children.look()
                         if (ex.field is Field.DataLoader<*, *, *>) {
-                            loaders[ex.field] = ex.field.loader.constructNew() as DataLoader<Any?, *>
+                            loaders[ex.field] = ex.field.loader.constructNew(ctx) as DataLoader<Any?, *>
                         }
                     }
                 }
@@ -351,7 +351,7 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
             val ctx = ExecutionContext(
                 Variables(schema, variables, plan.firstOrNull { it.variables != null }?.variables),
                 context,
-                plan.constructLoaders(),
+                plan.constructLoaders(context),
             )
 
 
@@ -360,7 +360,7 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
                     if (shouldInclude(ctx, node)) writeOperation(ctx, node, node.field as Field.Function<*, *>)
                 }
             }
-            ctx.loaders.values.map { it.dispatch() }
+            ctx.loaders.values.map { it.dispatch(context) }
         }
 
         result.await().toString()

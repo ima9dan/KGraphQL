@@ -1,5 +1,6 @@
 package nidomiro.kdataloader
 
+import com.apurebase.kgraphql.Context
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.*
 import nidomiro.kdataloader.statistics.SimpleStatisticsCollector
@@ -10,6 +11,7 @@ class TimedAutoDispatcherImpl<K, R>(
     parent: Job? = null,
 ) : SimpleDataLoaderImpl<K, R>(options, SimpleStatisticsCollector(), batchLoader), CoroutineScope {
 
+    override var ctx: Context = Context(emptyMap())
     private val autoChannel = Channel<Unit>()
     override val coroutineContext = Job(parent)
 
@@ -21,7 +23,7 @@ class TimedAutoDispatcherImpl<K, R>(
                 job = launch {
                     delay(options.waitInterval)
                     if (isActive) {
-                        dispatch()
+                        dispatch(ctx)
                     }
                 }
             }
@@ -31,7 +33,7 @@ class TimedAutoDispatcherImpl<K, R>(
     suspend fun cancel() {
         coroutineContext.cancel()
         autoChannel.close()
-        dispatch()
+        dispatch(ctx)
     }
 
     override suspend fun loadAsync(key: K): Deferred<R> {

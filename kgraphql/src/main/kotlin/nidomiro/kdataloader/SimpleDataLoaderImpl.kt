@@ -1,5 +1,6 @@
 package nidomiro.kdataloader
 
+import com.apurebase.kgraphql.Context
 import kotlinx.coroutines.*
 import nidomiro.kdataloader.statistics.SimpleStatisticsCollector
 import nidomiro.kdataloader.statistics.StatisticsCollector
@@ -14,6 +15,7 @@ open class SimpleDataLoaderImpl<K, R>(
         SimpleStatisticsCollector(),
         batchLoader
     )
+    override var ctx:Context = Context(emptyMap())
 
     constructor(batchLoader: BatchLoader<K, R>) : this(DataLoaderOptions(), batchLoader)
 
@@ -35,7 +37,7 @@ open class SimpleDataLoaderImpl<K, R>(
             val newDeferred = CompletableDeferred<R>()
             queue.enqueue(key, newDeferred)
             if (options.batchMode == BatchMode.LoadImmediately) {
-                dispatch()
+                dispatch(ctx)
             }
             newDeferred
         }
@@ -60,7 +62,7 @@ open class SimpleDataLoaderImpl<K, R>(
     }
 
     @Suppress("DeferredResultUnused")
-    override suspend fun dispatch() {
+    override suspend fun dispatch(ctx:Context) {
         statisticsCollector.incDispatchMethodCalledAsync()
 
         val queueEntries = if (options.cache != null) {
@@ -97,7 +99,7 @@ open class SimpleDataLoaderImpl<K, R>(
     ) {
         statisticsCollector.incBatchCallsExecutedAsync()
         try {
-            batchLoader(keys).forEachIndexed { i, result ->
+            batchLoader(keys,ctx).forEachIndexed { i, result ->
                 val queueEntry = queueEntries[i]
                 handleSingleBatchLoaderResult(result, queueEntry)
             }

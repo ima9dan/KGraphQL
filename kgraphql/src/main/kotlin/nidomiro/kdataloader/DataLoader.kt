@@ -1,14 +1,16 @@
 package nidomiro.kdataloader
 
+import com.apurebase.kgraphql.Context
 import kotlinx.coroutines.Deferred
 import kotlin.jvm.JvmName
 import nidomiro.kdataloader.statistics.DataLoaderStatistics
 
-typealias BatchLoader<K, R> = suspend (ids: List<K>) -> List<ExecutionResult<R>>
+typealias BatchLoader<K, R> = suspend (ids: List<K>, ctx:Context) -> List<ExecutionResult<R>>
 
 interface DataLoader<K, R> {
 
     val options: DataLoaderOptions<K, R>
+    var ctx: Context
 
     /**
      * Loads the value for the given Key.
@@ -26,7 +28,7 @@ interface DataLoader<K, R> {
      * Executes all stored requests via the given batchLoader.
      * After this function finishes all [Deferred] created before are completed.
      */
-    suspend fun dispatch()
+    suspend fun dispatch(ctx:Context)
 
     /**
      * Removes the value of the given Key from the cache
