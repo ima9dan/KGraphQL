@@ -60,11 +60,12 @@ class GraphQL(val schema: Schema) {
                 val routing: Route.() -> Unit = {
                     route(config.endpoint) {
                         post {
-                            var receiveText = call.receiveText()
-                            if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
-                                receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
-                            }
-                            val request = decodeFromString(GraphqlRequest.serializer(), receiveText)
+                            val request = decodeFromString(GraphqlRequest.serializer(), call.receiveText())
+//                            var receiveText = call.receiveText()
+//                            if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
+//                                receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
+//                            }
+//                            val request = decodeFromString(GraphqlRequest.serializer(), receiveText)
                             val ctx = context {
                                 config.contextSetup?.invoke(this, call)
                             }

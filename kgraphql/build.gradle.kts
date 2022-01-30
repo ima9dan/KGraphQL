@@ -35,7 +35,7 @@ dependencies {
 
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     implementation("com.apurebase:DeferredJsonBuilder:$deferredJsonBuilder_version")
-    api("de.nidomiro:KDataLoader:$kDataLoader_version")
+//    api("de.nidomiro:KDataLoader:$kDataLoader_version")
 
 
     testImplementation("io.netty:netty-all:$netty_version")
