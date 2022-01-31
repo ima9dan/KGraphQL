@@ -60,17 +60,23 @@ class GraphQL(val schema: Schema) {
                 val routing: Route.() -> Unit = {
                     route(config.endpoint) {
                         post {
-                            val request = decodeFromString(GraphqlRequest.serializer(), call.receiveText())
-//                            var receiveText = call.receiveText()
-//                            if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
-//                                receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
-//                            }
-//                            val request = decodeFromString(GraphqlRequest.serializer(), receiveText)
+//                            val request = decodeFromString(GraphqlRequest.serializer(), call.receiveText())
+                            var receiveText = call.receiveText()
+                            if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
+                                receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
+                            }
+                            val request = decodeFromString(GraphqlRequest.serializer(), receiveText)
                             val ctx = context {
                                 config.contextSetup?.invoke(this, call)
                             }
+//                            call.application.environment.log.info("ktor aaaaaaa")
+//                            println("ktor aaaaaaa")
                             val result = schema.execute(request.query, request.variables.toString(), ctx)
+//                            println("ktor bbbbbbbbb")
+//                            call.application.environment.log.info("ktor bbbbbb")
                             call.respondText(result, contentType = ContentType.Application.Json)
+//                            call.application.environment.log.info("ktor cccccc")
+
                         }
                         if (config.playground) get {
                             @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")

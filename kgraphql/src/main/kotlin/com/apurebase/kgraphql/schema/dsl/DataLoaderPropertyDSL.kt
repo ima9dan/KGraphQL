@@ -19,16 +19,6 @@ class DataLoaderPropertyDSL<T, K, R>(
     internal var dataLoader: BatchLoader<K, R>? = null
     internal var prepareWrapper: FunctionWrapper<K>? = null
 
-    var args: Any? = null
-        get() {
-            return field
-        }
-        set(value:Any?) {
-            if (field == null) { //一度でも値がはいったら以降は受け付けない(効率化のため)
-                field = value
-            }
-        }
-
     private val inputValues = mutableListOf<InputValueDef<*>>()
 
     fun loader(block: BatchLoader<K, R>) {
@@ -85,7 +75,6 @@ class DataLoaderPropertyDSL<T, K, R>(
 
         return PropertyDef.DataLoadedFunction(
             name = name,
-            args = args,
             description = description,
             accessRule = accessRuleBlock,
             deprecationReason = deprecationReason,
@@ -94,7 +83,7 @@ class DataLoaderPropertyDSL<T, K, R>(
             returnType = returnType,
             prepare = prepareWrapper!!,
             loader = TimedAutoDispatcherDataLoaderFactory(
-                { TimedAutoDispatcherDataLoaderOptions(20) },
+                { TimedAutoDispatcherDataLoaderOptions(50) },
                 mapOf(),
                 dataLoader!!,
                 null,

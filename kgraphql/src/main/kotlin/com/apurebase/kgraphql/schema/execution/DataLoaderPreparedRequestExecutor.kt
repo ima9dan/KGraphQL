@@ -21,6 +21,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.*
 import nidomiro.kdataloader.DataLoader
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.reflect.KProperty1
 
 
@@ -353,17 +355,27 @@ class DataLoaderPreparedRequestExecutor(val schema: DefaultSchema) : RequestExec
                 context,
                 plan.constructLoaders(context),
             )
-
-
             "data" toDeferredObj {
                 plan.forEach { node ->
                     if (shouldInclude(ctx, node)) writeOperation(ctx, node, node.field as Field.Function<*, *>)
                 }
             }
-            ctx.loaders.values.map { it.dispatch(context) }
+            ctx.loaders.values.forEach{ it.dispatch(context) }
         }
-
         result.await().toString()
+//        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+//        val currentDate = sdf.format(Date())
+//        System.out.println("ktor exec  is vvvv await before "+currentDate)
+//        val aaa = result.await()
+
+//        val currentDate3 = sdf.format(Date())
+//        System.out.println("ktor exec  is vvvv await toString "+currentDate3)
+
+//        val bbb = aaa.toString()
+
+//        val currentDate2 = sdf.format(Date())
+//        System.out.println("ktor exec  is vvvv end toString "+currentDate2)
+//        bbb
     }
 
     private fun createNullNode(node: Execution.Node, returnType: Type): JsonNull = if (returnType !is Type.NonNull) {

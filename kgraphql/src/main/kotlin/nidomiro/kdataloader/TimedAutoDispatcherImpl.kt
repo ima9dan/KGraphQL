@@ -29,6 +29,59 @@ class TimedAutoDispatcherImpl<K, R>(
             }
         }
     }
+//    init {
+//        launch {
+//            var job: Job? = null
+//            var safeFlg:Boolean = false
+//            for (msg in autoChannel) {
+//                if (!safeFlg) {
+//                    job?.cancel()
+//                }
+//                job = launch {
+//                    delay(options.waitInterval)
+//                    if (isActive) {
+//                        safeFlg = true
+//                        dispatch(ctx)
+//                        safeFlg = false
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
+//    init {
+////    println("開始")
+//        launch {
+//            var job: Job? = null
+//            for (msg in autoChannel) {
+//                val active = isActive
+//                if (job !== null) {
+//                    if (!job.isCompleted) {
+//
+//                    } else {
+//                        job?.cancel()
+//                        job = launch {
+//                            delay(options.waitInterval)
+//                            if (active) {
+//                                dispatch(ctx)
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    job?.cancel()
+//                    job = launch {
+//                        delay(options.waitInterval)
+//                        if (active) {
+//                            dispatch(ctx)
+//                        }
+//                    }
+//                }
+//            }
+//            dispatch(ctx)
+//        }
+////    println("終了")
+//    }
 
     suspend fun cancel() {
         coroutineContext.cancel()

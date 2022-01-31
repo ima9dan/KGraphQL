@@ -33,7 +33,6 @@ interface PropertyDef<T> : Depreciable, DescribedDef {
         val loader: DataLoaderFactory<K, R>,
         val prepare: FunctionWrapper<K>,
         val returnType: KType,
-        var args: Any?,
         override val description: String? = null,
         override val isDeprecated: Boolean = false,
         override val deprecationReason: String? = null,
