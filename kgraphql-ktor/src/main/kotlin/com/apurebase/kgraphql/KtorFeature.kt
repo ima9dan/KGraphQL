@@ -92,15 +92,15 @@ class GraphQL(val schema: Schema) {
             pipeline.featureOrNull(Routing)?.apply(routing) ?: pipeline.install(Routing, routing)
 
             pipeline.intercept(ApplicationCallPipeline.Monitoring) {
-                try {
+//                try {
                     coroutineScope {
                         proceed()
                     }
-                } catch (e: Throwable) {
-                    if (e is GraphQLError) {
-                        context.respond(HttpStatusCode.OK, e.serialize(config.debug))
-                    } else throw e
-                }
+//                } catch (e: Throwable) {
+//                    if (e is GraphQLError) {
+//                        context.respond(HttpStatusCode.OK, e.serialize(config.debug))
+//                    } else throw e
+//                }
             }
             return GraphQL(schema)
         }

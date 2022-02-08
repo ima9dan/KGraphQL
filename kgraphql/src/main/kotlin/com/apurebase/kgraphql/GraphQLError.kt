@@ -108,7 +108,13 @@ open class GraphQLError(
 
     open fun debugInfo(): Map<String,Any?> {
         val exception = mutableMapOf<String,Any?>()
-        val stackList = this.stackTrace
+        val stackList: Array<StackTraceElement>
+        if (this.originalError != null) {
+            stackList = this.originalError.stackTrace
+        } else {
+            stackList = this.stackTrace
+        }
+//        val stackList = this.originalError?.stackTrace
         if (!stackList[0].fileName.isNullOrEmpty()) {
             exception.put("fileName",stackList[0].fileName)
             exception.put("line",stackList[0].lineNumber.toString())
