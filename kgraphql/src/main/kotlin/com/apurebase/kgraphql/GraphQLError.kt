@@ -35,7 +35,7 @@ open class GraphQLError(
     /**
      * The original error thrown from a field resolver during execution.
      */
-    val originalError: Throwable? = null,
+    originalError: Throwable? = null,
 
     /**
      * Change 1: Added extensions to the error response.
@@ -43,11 +43,40 @@ open class GraphQLError(
     val status: Int? = 500,
     val code: String? = "INTERNAL_SERVER_ERROR",
     val detail: Map<String, Any?>? = null
-) : Exception(message) {
+) : Exception(getMessage(message,originalError)) {
 
     constructor(message: String, node: ASTNode?) : this(message, nodes = node?.let(::listOf))
     constructor(status: Int = 500,code: String?, message: String,  detail:Map<String, Any?>?) : this(message,null,null,null,null,status,code,detail )
     constructor(status: Int = 500,code: String?, message: String) : this(message,null,null,null,null,status,code )
+    constructor(status: Int = 500,code: String?, message: String,  detail:Map<String, Any?>?, originalError: Throwable? = null) : this(message,null,null,null,originalError,status,code,detail )
+    constructor(status: Int = 500,code: String?, message: String, originalError: Throwable? = null) : this(message,null,null,null,originalError,status,code ,null)
+
+    val originalError:Throwable?
+    init {
+        this.originalError = rootCause(originalError)
+    }
+
+    companion object {
+        fun rootCause(throwable: Throwable?):Throwable? {
+            if (throwable == null) {
+                return null
+            } else {
+                var rootCause:Throwable = throwable
+                while (rootCause.cause != null && rootCause.cause !== rootCause) {
+                    rootCause = rootCause.cause!!
+                }
+                return rootCause
+            }
+        }
+        fun getMessage(message: String,throwable: Throwable? ):String {
+            val myError = rootCause(throwable)
+            if (myError != null) {
+               return myError.message!!
+            } else {
+                return message
+            }
+        }
+    }
 
 
     /**
@@ -108,24 +137,25 @@ open class GraphQLError(
 
     open fun debugInfo(): Map<String,Any?> {
         val exception = mutableMapOf<String,Any?>()
-        val stackList: Array<StackTraceElement>
+        val stackListTmp: Array<StackTraceElement>
+
         if (this.originalError != null) {
-            stackList = this.originalError.stackTrace
+            stackListTmp = this.originalError.stackTrace
         } else {
-            stackList = this.stackTrace
+            stackListTmp = this.stackTrace
         }
-//        val stackList = this.originalError?.stackTrace
-        if (!stackList[0].fileName.isNullOrEmpty()) {
-            exception.put("fileName",stackList[0].fileName)
-            exception.put("line",stackList[0].lineNumber.toString())
+
+        if (!stackListTmp[0].fileName.isNullOrEmpty()) {
+            exception.put("fileName",stackListTmp[0].fileName)
+            exception.put("line",stackListTmp[0].lineNumber.toString())
         }
-        if (!stackList[0].methodName.isNullOrEmpty()) {
-            exception.put("method",stackList[0].methodName)
+        if (!stackListTmp[0].methodName.isNullOrEmpty()) {
+            exception.put("method",stackListTmp[0].methodName)
         }
-        if (!stackList[0].className.isNullOrEmpty()) {
-            exception.put("classPath", stackList[0].className)
+        if (!stackListTmp[0].className.isNullOrEmpty()) {
+            exception.put("classPath", stackListTmp[0].className)
         }
-        exception.put("stackTrace", stackList)
+        exception.put("stackTrace", stackListTmp)
         return  exception
     }
 
