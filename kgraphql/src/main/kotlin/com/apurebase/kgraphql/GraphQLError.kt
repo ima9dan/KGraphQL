@@ -16,7 +16,7 @@ open class GraphQLError(
     /**
      * An array of GraphQL AST Nodes corresponding to this error.
      */
-    val nodes: List<ASTNode>? = null,
+    var nodes: List<ASTNode>? = null,
 
     /**
      * The source GraphQL document for the first location of this error.
@@ -24,13 +24,13 @@ open class GraphQLError(
      * Note that if this Error represents more than one node, the source may not
      * represent nodes after the first node.
      */
-    val source: Source? = null,
+    var source: Source? = null,
 
     /**
      * An array of character offsets within the source GraphQL document
      * which correspond to this error.
      */
-    val positions: List<Int>? = null,
+    var positions: List<Int>? = null,
 
     /**
      * The original error thrown from a field resolver during execution.
@@ -40,9 +40,9 @@ open class GraphQLError(
     /**
      * Change 1: Added extensions to the error response.
      */
-    val status: Int? = 500,
-    val code: String? = "INTERNAL_SERVER_ERROR",
-    val detail: Map<String, Any?>? = null
+    var status: Int? = 500,
+    var code: String? = "INTERNAL_SERVER_ERROR",
+    var detail: Map<String, Any?>? = null
 ) : Exception(getMessage(message,originalError)) {
 
     constructor(message: String, node: ASTNode?) : this(message, nodes = node?.let(::listOf))
@@ -54,6 +54,14 @@ open class GraphQLError(
     val originalError:Throwable?
     init {
         this.originalError = rootCause(originalError)
+        if (this.originalError is GraphQLError) {
+            this.status = this.originalError.status
+            this.code = this.originalError.code
+            this.detail = this.originalError.detail
+            this.positions = this.originalError.positions
+            this.source = this.originalError.source
+            this.nodes = this.originalError.nodes
+        }
     }
 
     companion object {
@@ -89,7 +97,7 @@ open class GraphQLError(
      */
     val locations: List<Source.LocationSource>? by lazy {
             if (positions != null && source != null) {
-            positions.map { pos -> getLocation(source, pos) }
+            positions!!.map { pos -> getLocation(source!!, pos) }
         } else nodes?.mapNotNull { node ->
             node.loc?.let { getLocation(it.source, it.start) }
         }
@@ -99,14 +107,14 @@ open class GraphQLError(
         var output = message ?: ""
 
         if (nodes != null) {
-            for (node in nodes) {
+            for (node in nodes!!) {
                 if (node.loc != null) {
                     output += "\n\n" + node.loc!!.printLocation()
                 }
             }
         } else if (source != null && locations != null) {
             for (location in locations!!) {
-                output += "\n\n" + source.print(location)
+                output += "\n\n" + source!!.print(location)
             }
         }
 
@@ -158,6 +166,36 @@ open class GraphQLError(
         exception.put("stackTrace", stackListTmp)
         return  exception
     }
+
+//    data class DebugInfo(val fileName:String,
+//        val line:String,
+//                  val method:String,
+//                     val classPath:String,
+//
+//                         )
+//    open fun debugInfoByClass(): Map<String,Any?> {
+//        val exception = mutableMapOf<String,Any?>()
+//        val stackListTmp: Array<StackTraceElement>
+//
+//        if (this.originalError != null) {
+//            stackListTmp = this.originalError.stackTrace
+//        } else {
+//            stackListTmp = this.stackTrace
+//        }
+//
+//        if (!stackListTmp[0].fileName.isNullOrEmpty()) {
+//            exception.put("fileName",stackListTmp[0].fileName)
+//            exception.put("line",stackListTmp[0].lineNumber.toString())
+//        }
+//        if (!stackListTmp[0].methodName.isNullOrEmpty()) {
+//            exception.put("method",stackListTmp[0].methodName)
+//        }
+//        if (!stackListTmp[0].className.isNullOrEmpty()) {
+//            exception.put("classPath", stackListTmp[0].className)
+//        }
+//        exception.put("stackTrace", stackListTmp)
+//        return  exception
+//    }
 
     open fun serialize(debug:Boolean=false): String = buildJsonObject {
         put("errors", buildJsonArray {
