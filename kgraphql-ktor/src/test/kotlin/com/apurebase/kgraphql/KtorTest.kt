@@ -1,9 +1,11 @@
 package com.apurebase.kgraphql
 
+import com.apurebase.kgraphql.KGraphQL.Companion.schema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.http.*
+import io.ktor.http.HttpHeaders
 import io.ktor.server.testing.*
 
 
