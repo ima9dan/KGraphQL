@@ -10,10 +10,9 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
-import kotlinx.serialization.json.Json.Default.decodeFromString
-import java.util.*
+import kotlinx.serialization.json.Json
 
-class GraphQL(val schema: Schema) {
+class GraphQL3(val schema: Schema) {
 
     class Configuration: SchemaConfigurationDSL() {
         fun schema(block: SchemaBuilder.() -> Unit) {
@@ -48,7 +47,7 @@ class GraphQL(val schema: Schema) {
 
 
     companion object Feature: ApplicationFeature<Application, Configuration, GraphQL> {
-        override val key = AttributeKey<GraphQL>("KGraphQL1")
+        override val key = AttributeKey<GraphQL>("KGraphQL3")
 
         override fun install(pipeline: Application, configure: Configuration.() -> Unit): GraphQL {
             val config = Configuration().apply(configure)
@@ -66,7 +65,7 @@ class GraphQL(val schema: Schema) {
                             if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
                                 receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
                             }
-                            val request = decodeFromString(GraphqlRequest.serializer(), receiveText)
+                            val request = Json.decodeFromString(GraphqlRequest.serializer(), receiveText)
                             val ctx = context {
                                 config.contextSetup?.invoke(this, call)
                             }
@@ -94,9 +93,9 @@ class GraphQL(val schema: Schema) {
 
             pipeline.intercept(ApplicationCallPipeline.Monitoring) {
 //                try {
-                    coroutineScope {
-                        proceed()
-                    }
+                coroutineScope {
+                    proceed()
+                }
 //                } catch (e: Throwable) {
 //                    if (e is GraphQLError) {
 //                        context.respond(HttpStatusCode.OK, e.serialize(config.debug))
