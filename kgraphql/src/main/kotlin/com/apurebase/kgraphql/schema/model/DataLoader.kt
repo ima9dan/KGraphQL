@@ -65,6 +65,9 @@ fun <K, V> CoroutineScope.dataActor(totalTimes: Int, batchLoader: suspend (List<
                 log("$counter")
                 if (--counter == 0) doJoin()
             }
+            else -> {
+                // 何もしない
+            }
         }
     }
 }

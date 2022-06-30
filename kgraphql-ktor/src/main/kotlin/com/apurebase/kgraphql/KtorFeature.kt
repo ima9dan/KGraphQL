@@ -3,11 +3,11 @@ package com.apurebase.kgraphql
 import com.apurebase.kgraphql.schema.Schema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import com.apurebase.kgraphql.schema.dsl.SchemaConfigurationDSL
-import io.ktor.application.*
 import io.ktor.http.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.util.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json.Default.decodeFromString
@@ -47,7 +47,7 @@ class GraphQL(val schema: Schema) {
     }
 
 
-    companion object Feature: ApplicationFeature<Application, Configuration, GraphQL> {
+    companion object Feature: Plugin<Application, Configuration, GraphQL> {
         override val key = AttributeKey<GraphQL>("KGraphQL1")
 
         override fun install(pipeline: Application, configure: Configuration.() -> Unit): GraphQL {
@@ -90,7 +90,7 @@ class GraphQL(val schema: Schema) {
                 config.wrapWith?.invoke(this, routing) ?: routing(this)
             }
 
-            pipeline.featureOrNull(Routing)?.apply(routing) ?: pipeline.install(Routing, routing)
+            pipeline.pluginOrNull(Routing)?.apply(routing) ?: pipeline.install(Routing, routing)
 
             pipeline.intercept(ApplicationCallPipeline.Monitoring) {
 //                try {
