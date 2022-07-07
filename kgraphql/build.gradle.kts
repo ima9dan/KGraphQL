@@ -138,7 +138,11 @@ tasks {
         exclude("**/*.kotlin_metadata")
         exclude("**/*.kotlin_builtins")
         exclude("kotlinx/**/*.*")
+        dependencies {
+            exclude(dependency("org.jetbrains.kotlinx:.*"))
+            exclude(dependency("com.fasterxml.*:.*"))
 
+        }
         archiveClassifier.set("") // remove suffix `-all` as intellij can't find the library otherwise
     }
 }

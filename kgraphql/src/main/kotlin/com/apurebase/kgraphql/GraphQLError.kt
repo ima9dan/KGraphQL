@@ -224,4 +224,32 @@ open class GraphQLError(
             }
         })
     }.toString()
+
+    open fun serializeJsonElement(debug:Boolean=false): JsonElement = buildJsonObject {
+        put("errors", buildJsonArray {
+            addJsonObject {
+                put("message", message)
+                put("locations", buildJsonArray {
+                    locations?.forEach {
+                        addJsonObject {
+                            put("liane", it.line)
+                            put("column", it.column)
+                        }
+                    }
+                })
+                put("path", buildJsonArray {
+                    // TODO: Build this path. https://spec.graphql.org/June2018/#example-90475
+                })
+                if (!debug) {
+                    extensions?.let {
+                        put("extensions", it.toJsonElement())
+                    }
+                } else {
+                    extensionsDebug().let {
+                        put("extensions", it.toJsonElement())
+                    }
+                }
+            }
+        })
+    }
 }

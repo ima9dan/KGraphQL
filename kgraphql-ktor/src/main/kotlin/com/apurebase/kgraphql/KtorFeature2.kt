@@ -60,12 +60,16 @@ class GraphQL2(val schema: Schema) {
                 val routing: Route.() -> Unit = {
                     route(config.endpoint) {
                         post {
-//                            val request = decodeFromString(GraphqlRequest.serializer(), call.receiveText())
-                            var receiveText = call.receiveText()
-                            if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
-                                receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
-                            }
-                            val request = Json.decodeFromString(GraphqlRequest.serializer(), receiveText)
+                            val request = Json.decodeFromString(GraphqlRequest.serializer(), call.receiveText())
+//                            var receiveText = call.receiveText()
+
+                            // ktorの不具合としてContent-Typeにutf-8が指定されていないと、ISO-8859-1になってしまう問題があったが、
+                            // ktor2.0で改善された模様
+                            // https://youtrack.jetbrains.com/issue/KTOR-789/Make-default-charset-UTF-8-when-using-receiveText-for-applicationjson-request
+//                            if (call.request.headers.get(HttpHeaders.ContentType).toString().indexOf("charset") == -1) {
+//                                receiveText = String(receiveText.toByteArray(charset("ISO-8859-1")), charset("UTF-8"))
+//                            }
+//                            val request = decodeFromString(GraphqlRequest.serializer(), receiveText)
                             val ctx = context {
                                 config.contextSetup?.invoke(this, call)
                             }

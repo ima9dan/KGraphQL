@@ -31,7 +31,6 @@ dependencies {
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-    implementation("com.github.salomonbrys.kotson:kotson:2.5.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
     testImplementation("org.amshove.kluent:kluent:$kluent_version")
@@ -133,7 +132,7 @@ tasks {
             exclude(dependency("org.jetbrains.kotlin:.*"))
             exclude(dependency("org.jetbrains.kotlinx:.*"))
             exclude(dependency("io.ktor:.*"))
-
+            exclude(dependency("com.fasterxml.*:.*"))
         }
 //        dependencies {
 //            exclude("kotlinx/**")
