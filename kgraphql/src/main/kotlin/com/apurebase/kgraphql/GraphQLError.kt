@@ -79,7 +79,11 @@ open class GraphQLError(
         fun getMessage(message: String,throwable: Throwable? ):String {
             val myError = rootCause(throwable)
             if (myError != null) {
-               return myError.message!!
+                if (myError.message.isNullOrEmpty()) {
+                    return myError.toString()
+                } else {
+                    return myError.message!!
+                }
             } else {
                 return message
             }
