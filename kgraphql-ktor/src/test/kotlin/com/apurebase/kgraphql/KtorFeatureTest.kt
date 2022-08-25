@@ -5,6 +5,7 @@ import io.ktor.server.auth.*
 import kotlinx.serialization.json.*
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
+import java.lang.Exception
 
 class KtorFeatureTest : KtorTest() {
 
@@ -88,7 +89,16 @@ class KtorFeatureTest : KtorTest() {
     fun `Simple variables test`() {
         val server = withServer {
             enum<MockEnum>()
-            inputType<InputTwo>()
+            inputType<InputTwo>{
+                property<Int>("quantity"){
+                    resolver{
+                        it.quantity
+                    }
+                    accessRule{ data, ctx ->
+                        Exception("っっっっっっっっっっｊ")
+                    }
+                }
+            }
             query("test") { resolver { input: InputTwo -> "success: $input" } }
         }
 

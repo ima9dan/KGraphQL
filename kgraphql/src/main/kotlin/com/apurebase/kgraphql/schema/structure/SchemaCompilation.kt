@@ -306,6 +306,7 @@ class SchemaCompilation(
         return typeProxy
     }
 
+
     private suspend fun handleInputType(kClass: KClass<*>) : Type {
         assertValidObjectType(kClass)
 
@@ -318,7 +319,10 @@ class SchemaCompilation(
             kClass.memberProperties.map { property -> handleKotlinInputProperty(property) }
         } else listOf()
 
-        typeProxy.proxied = Type.Input(inputObjectDef, fields)
+        val extensionFields = inputObjectDef.extensionProperties
+            .map { property -> handleOperation(property) }
+
+        typeProxy.proxied = Type.Input(inputObjectDef, fields, extensionFields)
         return typeProxy
     }
 

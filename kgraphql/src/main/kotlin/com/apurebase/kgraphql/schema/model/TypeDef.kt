@@ -36,6 +36,7 @@ interface TypeDef {
     class Input<T : Any>(
             name : String,
             override val kClass: KClass<T>,
+            val extensionProperties : List<PropertyDef.Function<T, *>> = emptyList(),
             description: String? = null
     ) : BaseKQLType(name, description), Kotlin<T>
 

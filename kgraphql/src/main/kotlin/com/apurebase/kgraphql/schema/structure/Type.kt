@@ -200,8 +200,9 @@ interface Type : __Type {
 
     class Input<T : Any>(
             kqlType: TypeDef.Input<T>,
-            override val inputFields: List<InputValue<*>> = emptyList()
-    ) : Type {
+            override val inputFields: List<InputValue<*>> = emptyList(),
+            fields: List<Field> = emptyList(),
+    ) : ComplexType(fields) {
 
         override val kClass = kqlType.kClass
 
